@@ -19,6 +19,7 @@ async function run() {
         await client.connect();
         const itemCollection = client.db('sofaMart').collection('furnitureItem');
 
+        //Get Multiple Item
         app.get('/item', async (req, res) => {
             const query = {};
             const cursor = itemCollection.find(query);
@@ -26,6 +27,7 @@ async function run() {
             res.send(items);
         });
 
+        //Get Single Item
         app.get('/item/:id', async(req, res)=>{
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -33,9 +35,18 @@ async function run() {
             res.send(item);
         })
 
+        //Post
         app.post('/item', async(req, res) =>{
             const newItem = req.body;
             const result = await itemCollection.insertOne(newItem);
+            res.send(result);
+        });
+
+        //Delete
+        app.delete('/item/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await itemCollection.deleteOne(query);
             res.send(result);
         })
 
