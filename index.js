@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
@@ -19,6 +20,16 @@ async function run() {
         await client.connect();
         const itemCollection = client.db('sofaMart').collection('furnitureItem');
 
+        //Auth
+        app.post('/login', async(req, res) =>{
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '7d'
+            });
+            res.send({accessToken})
+        })
+
+        //Server Api
         //Get Multiple Item
         app.get('/item', async (req, res) => {
             const query = {};
