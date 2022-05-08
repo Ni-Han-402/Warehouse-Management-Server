@@ -42,6 +42,18 @@ async function run() {
             res.send(result);
         });
 
+
+        //My Item
+
+        app.get('/myitem', async(req, res) =>{
+            const email = req.query.email;
+            console.log(email);
+            const query = {email: email};
+            const cursor = itemCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items);
+        })
+
         //Delete
         app.delete('/item/:id', async(req, res) =>{
             const id = req.params.id;
@@ -49,7 +61,14 @@ async function run() {
             const result = await itemCollection.deleteOne(query);
             res.send(result);
         })
+        app.delete('/myitem/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await itemCollection.deleteOne(query);
+            res.send(result);
+        })
 
+        //Single Item Quantity Update
         app.put('/item/:id', async(req, res) =>{
             const id = req.params.id;
             const updateItem = req.body;
@@ -61,6 +80,22 @@ async function run() {
                 }
             };
             const result = await itemCollection.updateOne(filter, updateData, options);
+            res.send(result);
+        })
+
+
+        app.put('/item/:id', async(req, res) =>{
+            const id = req.params.id;
+            const updateItem = req.body.item.quantity;
+            console.log(deliveredItem);
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: true };
+            const deliveredData = {
+                $set: {
+                    quantity: updateItem.makeDeliveredQuantity
+                }
+            };
+            const result = await itemCollection.updateOne(filter, deliveredData, options);
             res.send(result);
         })
 }
